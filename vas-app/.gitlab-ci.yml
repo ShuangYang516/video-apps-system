@@ -1,0 +1,35 @@
+stages:
+  - test
+  - image
+
+go_test:
+  except:
+    variables:
+      - $APP
+  stage: test
+  image: golang:1.10.2-stretch
+  before_script:
+    - mkdir -p $GOPATH/src/qiniu.com
+    - ln -s $CI_PROJECT_DIR $GOPATH/src/qiniu.com
+    - cd $GOPATH/src/qiniu.com/$CI_PROJECT_NAME
+    - git submodule add ../vas-base.git && mv vas-base ..
+  tags:
+    - vas
+  script:
+    - make test
+
+build_image:
+  only:
+    variables:
+      - $APP
+  stage: image
+  tags:
+    - vas
+  before_script:
+    - apk add openssh
+  script:
+    - IMAGE_TAG=$CI_REGISTRY/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME/$APP:$(date '+%Y%m%d'-$CI_PIPELINE_ID)
+    - docker build --pull -f docker/$APP/Dockerfile -t $IMAGE_TAG .
+    - docker push $IMAGE_TAG && docker rmi $IMAGE_TAG
+    - if [ $DEPLOY ]; then ssh qnai@$DEPLOY ". ~/.zshrc && cbvas.deploy $APP $IMAGE_TAG"; fi
+    - echo $IMAGE_TAG

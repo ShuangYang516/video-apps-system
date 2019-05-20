@@ -1,0 +1,15 @@
+version: '2'
+ 
+services:
+  cbvas: 
+    image: dashboard:v1.0
+    restart: always
+    volumes:
+      - ./dashboard.conf:/workspace/conf/dashboard.conf:ro
+    ports: 
+      - "10011:80"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5g"
+ 

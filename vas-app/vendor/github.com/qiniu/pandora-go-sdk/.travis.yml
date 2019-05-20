@@ -1,0 +1,10 @@
+language: go
+sudo: false
+go:
+  - 1.8
+before_script:
+script:
+  - go get ./...
+  - cd pipeline && go test ./... && cd -
+  - cd logdb && go test ./... && cd -
+  - cd base && go test ./... && cd -

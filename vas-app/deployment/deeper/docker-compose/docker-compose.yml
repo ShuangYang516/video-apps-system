@@ -1,0 +1,13 @@
+version: '2'
+ 
+services:
+  cbvas: 
+    image: deeper:v1.0
+    restart: always
+    volumes:
+      - ./deeper.conf:/workspace/deeper.conf:ro
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "5g"
+ 

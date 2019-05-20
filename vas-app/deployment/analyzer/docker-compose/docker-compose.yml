@@ -1,0 +1,37 @@
+version: '2.3'
+
+services:
+  huangpu:
+    image: reg-xs.qiniu.io/cbvas/analyzer:latest
+    restart: always
+    runtime: nvidia
+    #network_mode: "none"
+    #command: tail -f /dev/null
+    volumes:
+        #- /workspace/huangpu/huangpu.conf:/workspace/conf/huangpu.conf:ro
+        - /workspace/huangpu/cbvas/analyzer.conf:/workspace/conf/analyzer.conf:ro
+        #- /workspace/huangpu/share:/workspace/share:rw
+    devices:
+#      - /dev/nvidia0
+#      - /dev/nvidia1
+#      - /dev/nvidia2
+#      - /dev/nvidia3
+#      - /dev/nvidia4
+#      - /dev/nvidia5
+      - /dev/nvidia6
+      - /dev/nvidia7
+    ports:
+      - "8083:80"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "15g"
+    networks:
+        huangpu:
+
+networks:
+    huangpu:
+      ipam:
+         config:
+         - subnet: 172.21.0.0/16
+           gateway: 172.21.0.1
